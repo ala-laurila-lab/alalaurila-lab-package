@@ -16,7 +16,7 @@ classdef Cell < fi.helsinki.biosci.ala_laurila.sources.Cell
                     {'S cone', 'M cone', 'rod'}})), ...
                 'description', 'The confirmed type of the recorded cell');
             
-            obj.addAllowableParentType('edu.washington.rieke.sources.mouse.Preparation');
+            obj.addAllowableParentType('fi.helsinki.biosci.ala_laurila.sources.mouse.Preparation');
         end
         
     end

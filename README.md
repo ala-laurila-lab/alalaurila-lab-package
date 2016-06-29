@@ -4,12 +4,12 @@ Symphony data acquisition Matlab interface customized for Ala-Laurila Lab
 
 ## Clone
 
-`git clone https://github.com/Symphony-DAS/symphony-matlab2.git --recursive`
+`git clone https://github.com/Symphony-DAS/alalaurila-lab-package.git --recursive`
 
 **Note:** You must use the `--recursive` option to recursively clone all submodules.
 
 ## Requirements
 
-- Matlab 2015a+
+- Matlab 2016a+
 - Windows 7
 
