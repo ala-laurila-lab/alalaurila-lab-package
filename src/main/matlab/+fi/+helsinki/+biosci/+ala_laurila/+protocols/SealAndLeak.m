@@ -46,7 +46,7 @@ classdef SealAndLeak < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaProtoc
         end
         
         function prepareRun(obj)
-            prepareRun@edu.washington.rieke.protocols.RiekeProtocol(obj);
+            prepareRun@fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaProtocol(obj);
             
             if isempty(obj.modeFigure) || ~isvalid(obj.modeFigure)
                 obj.modeFigure = obj.showFigure('symphonyui.builtin.figures.CustomFigure', @null);
