@@ -5,6 +5,7 @@ classdef SimulatedDaqWithMultiClamp < symphonyui.core.descriptions.RigDescriptio
         function obj = SimulatedDaqWithMultiClamp()
             import symphonyui.builtin.daqs.*;
             import symphonyui.builtin.devices.*;
+            import fi.helsinki.biosci.ala_laurila.devices.*;
             import symphonyui.core.*;
             
             daq = HekaSimulationDaqController();
@@ -16,9 +17,8 @@ classdef SimulatedDaqWithMultiClamp < symphonyui.core.descriptions.RigDescriptio
             amp2 = MultiClampDevice('Amp2', 2).bindStream(daq.getStream('ANALOG_OUT.1')).bindStream(daq.getStream('ANALOG_IN.1'));
             obj.addDevice(amp2);
             
-            green = UnitConvertingDevice('Green LED', 'V').bindStream(daq.getStream('ANALOG_OUT.2'));
-            green.addConfigurationSetting('ndfs', {}, ...
-                'type', PropertyType('cellstr', 'row', {'0.3', '0.6', '1.2', '3.0', '4.0'}));
+            green = LEDMotorizedNdfDevice('Green LED', 'V', 'COM4').bindStream(daq.getStream('ANALOG_OUT.2'));
+            green.addNdfConfiguration('ndfs', PropertyType('char', 'row', {'A0.3A', 'A1A', 'A2A', 'A3A', 'A4A', 'Empty'}));
             green.addConfigurationSetting('gain', '', ...
                 'type', PropertyType('char', 'row', {'', 'low', 'medium', 'high'}));
             obj.addDevice(green);
@@ -42,9 +42,9 @@ classdef SimulatedDaqWithMultiClamp < symphonyui.core.descriptions.RigDescriptio
             % stage.addConfigurationSetting('micronsPerPixel', 1.6, 'isReadOnly', true);
             % obj.addDevice(stage);
             
-            lightCrafter = fi.helsinki.biosci.ala_laurila.devices.LightCrafterDevice();
-            lightCrafter.addConfigurationSetting('micronsPerPixel', 1.6, 'isReadOnly', true);
-            obj.addDevice(lightCrafter);
+            %lightCrafter = fi.helsinki.biosci.ala_laurila.devices.LightCrafterDevice();
+            %lightCrafter.addConfigurationSetting('micronsPerPixel', 1.6, 'isReadOnly', true);
+            %obj.addDevice(lightCrafter);
         end
         
     end
