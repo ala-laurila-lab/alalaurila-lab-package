@@ -7,7 +7,7 @@ classdef AaltoPatchRig < symphonyui.core.descriptions.RigDescription
             import symphonyui.builtin.devices.*;
             import symphonyui.core.*;
             
-            daq = HekaDaqController();
+            daq = HekaDaqController(HekaDeviceType.ITC1600);
             obj.daqController = daq;
             
             amp1 = MultiClampDevice('Amp1', 1, 836019).bindStream(daq.getStream('ANALOG_OUT.0')).bindStream(daq.getStream('ANALOG_IN.0'));
