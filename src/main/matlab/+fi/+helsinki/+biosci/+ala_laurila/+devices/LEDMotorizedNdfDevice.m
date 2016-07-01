@@ -26,14 +26,10 @@ classdef LEDMotorizedNdfDevice < symphonyui.builtin.devices.UnitConvertingDevice
         
         function setConfigurationSetting(obj, name, value)
             if strcmp(name, obj.ndfName)
-                obj.setNDF(value);
+                obj.position = find(strcmp(obj.ndfs, value));
                 value = obj.ndfs{obj.position};
             end
             setConfigurationSetting@symphonyui.builtin.devices.UnitConvertingDevice(obj, name, value);
-        end
-        
-        function delete(obj)
-            delete(obj.serialPort);
         end
         
         function position = get.position(obj)
@@ -52,15 +48,17 @@ classdef LEDMotorizedNdfDevice < symphonyui.builtin.devices.UnitConvertingDevice
             fclose(obj.serialPort);
         end
         
-        function setNDF(obj, ndf)
-            selectedPosition = find(strcmp(obj.ndfs, ndf));
-            
-            if selectedPosition ~= obj.position
+        function set.position(obj, position)
+            if position ~= obj.position
                 fopen(obj.serialPort);
-                fprintf(obj.serialPort, ['pos=' num2str(selectedPosition) '\n']);
+                fprintf(obj.serialPort, ['pos=' num2str(position) '\n']);
                 pause(3);
                 fclose(obj.serialPort);
             end
+        end
+        
+        function delete(obj)
+            delete(obj.serialPort);
         end
     end
 end
