@@ -73,19 +73,17 @@ classdef MovingBar < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStagePro
             yStep = sin(obj.curAngle * pi/180);
             
             xPos = canvasSize(1)/2 - xStep * canvasSize(2)/2;
-            yPos = canvasSize(2)/2 - yStep * canvasSize(2)/2;
+            yPos = canvasSize(1)/2 - yStep * canvasSize(2)/2;
             
             function pos = movementController(state, duration)
-                
-                if (state.time <= obj.preTime/1e3 || state.time > (duration - obj.tailTime)/1e3)
-                    pos = [NaN, NaN];
-                else
+                pos = [NaN, NaN];
+                if (state.time > obj.preTime/1e3 && state.time <= (duration - obj.tailTime)/1e3)
                     pos = [xPos + (state.time - obj.preTime/1e3) * pixelSpeed * xStep,...
                         yPos + (state.time - obj.preTime/1e3) * pixelSpeed* yStep];
                 end
             end
             
-            barMovement = stage.builtin.controllers.PropertyController(bar, 'position', @(state)movementController(state, p.duration));
+            barMovement = stage.builtin.controllers.PropertyController(bar, 'position', @(state)movementController(state, p.duration * 1e3));
             p.addController(barMovement);
         end
         
