@@ -10,7 +10,7 @@ classdef MovingBar < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStagePro
         barSpeed = 1000                 % Bar speed (um / s)
         distance = 1000                 % Bar distance (um)
         nAngles = 8                     % Number of angles
-        startAngle = 0                  % Start angle for bar direction
+        startAngle = 0                  % Start angle for bar direction 
         backgroundIntensity = 0.5       % Background light intensity (0-1)
         numberOfAverages = uint16(5)    % Number of epochs
         interpulseInterval = 0          % Duration between spots (s)
@@ -18,8 +18,8 @@ classdef MovingBar < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStagePro
     
     properties (Hidden)
         ampType
-        angles
-        curAngle
+        angles                          % Moving bar with Number of angles range between [0 - 360]
+        curAngle                        % Moving bar angle for the current epoch @see prepareEpoch 
     end
     
     properties (Dependent)

@@ -5,11 +5,11 @@ classdef ContrastResponse < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaS
         preTime = 1000                  % Spot leading duration (ms)
         stimTime = 500                  % Spot duration (ms)
         tailTime = 1000                 % Spot trailing duration (ms)
-        contrastNSteps = 5
-        minContrast = 0.02
-        maxContrast = 1
-        contrastDirection = 'positive'
-        spotDiameter = 300
+        contrastNSteps = 5              % Number Of contrast steps
+        minContrast = 0.02              % Minimum contrast (0-1)
+        maxContrast = 1                 % Maximum contrast (0-1)
+        contrastDirection = 'positive'  % Direction of contrast
+        spotDiameter = 300              % Spot diameter (um)
         backgroundIntensity = 0.5       % Background light intensity (0-1)
         numberOfAverages = uint16(5)    % Number of epochs
         interpulseInterval = 0          % Duration between spots (s)
@@ -18,10 +18,10 @@ classdef ContrastResponse < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaS
     properties (Hidden)
         ampType
         contrastDirectionType = symphonyui.core.PropertyType('char', 'row', {'both', 'positive', 'negative'})
-        contrastValues
-        intensityValues
-        contrast
-        intensity
+        contrastValues                  % Linspace range between min and max contrast for given contrast steps
+        intensityValues                 % Spot background Intensity * (1 + contrast Values)
+        contrast                        % Spot contrast value for current epoch @see prepareEpoch
+        intensity                       % Spot intensity value for current epoch @see prepareEpoch
     end
     
     methods
@@ -51,7 +51,7 @@ classdef ContrastResponse < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaS
             elseif strcmp(obj.contrastDirection, 'negative')
                 obj.contrastValues = -1.* contrasts;
             else
-                obj.contrastValues =[fliplr(-1.* contrasts), contrasts];
+                obj.contrastValues = [fliplr(-1.* contrasts), contrasts];
             end
             obj.intensityValues = obj.backgroundIntensity + (obj.contrastValues.* obj.backgroundIntensity);
             

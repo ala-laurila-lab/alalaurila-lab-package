@@ -17,12 +17,12 @@ classdef Annulus < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStageProto
     end
     
     properties (Hidden)
+        log = log4m.LogManager.getLogger('fi.helsinki.biosci.ala_laurila.protocols.stage.Annulus');
         keepConstantType = symphonyui.core.PropertyType('char', 'row', {'area', 'thickness'})
         ampType
-        innerDiameterVector
-        log = log4m.LogManager.getLogger('fi.helsinki.biosci.ala_laurila.protocols.stage.Annulus');
-        curInnerDiameter
-        curOuterDiameter
+        innerDiameterVector             % Annulus inner diameter vector, linearly spaced between minInnerDiam and minOuterDiam diameter for nSteps
+        curInnerDiameter                % Annulus innner diameter for the current epoch @see prepare epoch
+        curOuterDiameter                % Annulus outer diameter for the current epoch @see prepare epoch
     end
     
     
