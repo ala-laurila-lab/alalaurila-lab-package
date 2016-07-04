@@ -55,15 +55,15 @@ classdef (Abstract) AlaLaurilaProtocol < symphonyui.core.Protocol
         end
         
         function amp = get.amp2(obj)
-            amp = obj.getSecondaryAmp('amp2');
+            amp = obj.getSecondaryAmp(obj.ampList{1});
         end
         
         function amp = get.amp3(obj)
-            amp = obj.getSecondaryAmp('amp3');
+            amp = obj.getSecondaryAmp(obj.ampList{2});
         end
         
         function amp = get.amp4(obj)
-            amp = obj.getSecondaryAmp('amp4');
+            amp = obj.getSecondaryAmp(obj.ampList{3});
         end
         
         function amp = getSecondaryAmp(obj, name)

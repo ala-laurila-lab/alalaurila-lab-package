@@ -1,12 +1,12 @@
 classdef LEDMotorizedNdfDevice < symphonyui.builtin.devices.UnitConvertingDevice
     
-    properties(Access = private)
+    properties (Access = private)
         serialPort
         ndfs
         ndfName
     end
     
-    properties(Dependent, Access = private)
+    properties (Dependent, Access = private)
         position
     end
     
@@ -61,4 +61,5 @@ classdef LEDMotorizedNdfDevice < symphonyui.builtin.devices.UnitConvertingDevice
             delete(obj.serialPort);
         end
     end
+    
 end

@@ -17,11 +17,11 @@ classdef SimulatedDaqWithMultiClamp < symphonyui.core.descriptions.RigDescriptio
             amp2 = MultiClampDevice('Amp2', 2).bindStream(daq.getStream('ANALOG_OUT.1')).bindStream(daq.getStream('ANALOG_IN.1'));
             obj.addDevice(amp2);
             
-            green = LEDMotorizedNdfDevice('Green LED', 'V', 'COM4').bindStream(daq.getStream('ANALOG_OUT.2'));
-            green.addNdfConfiguration('ndfs', PropertyType('char', 'row', {'A0.3A', 'A1A', 'A2A', 'A3A', 'A4A', 'Empty'}));
-            green.addConfigurationSetting('gain', '', ...
-                'type', PropertyType('char', 'row', {'', 'low', 'medium', 'high'}));
-            obj.addDevice(green);
+            %green = LEDMotorizedNdfDevice('Green LED', 'V', 'COM4').bindStream(daq.getStream('ANALOG_OUT.2'));
+            %green.addNdfConfiguration('ndfs', PropertyType('char', 'row', {'A0.3A', 'A1A', 'A2A', 'A3A', 'A4A', 'Empty'}));
+            %green.addConfigurationSetting('gain', '', ...
+            %    'type', PropertyType('char', 'row', {'', 'low', 'medium', 'high'}));
+            %obj.addDevice(green);
             
             blue = UnitConvertingDevice('Blue LED', 'V').bindStream(daq.getStream('ANALOG_OUT.3'));
             blue.addConfigurationSetting('ndfs', {}, ...
@@ -38,9 +38,9 @@ classdef SimulatedDaqWithMultiClamp < symphonyui.core.descriptions.RigDescriptio
             daq.getStream('DIGITAL_OUT.1').setBitPosition(trigger2, 2);
             obj.addDevice(trigger2);
             
-            % stage = io.github.stage_vss.devices.StageDevice('localhost');
-            % stage.addConfigurationSetting('micronsPerPixel', 1.6, 'isReadOnly', true);
-            % obj.addDevice(stage);
+            stage = io.github.stage_vss.devices.StageDevice('localhost');
+            stage.addConfigurationSetting('micronsPerPixel', 1.6, 'isReadOnly', true);
+            obj.addDevice(stage);
             
             %lightCrafter = fi.helsinki.biosci.ala_laurila.devices.LightCrafterDevice();
             %lightCrafter.addConfigurationSetting('micronsPerPixel', 1.6, 'isReadOnly', true);
