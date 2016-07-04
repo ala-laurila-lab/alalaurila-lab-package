@@ -21,12 +21,10 @@ classdef Annulus < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStageProto
         ampType
         innerDiameterVector
         log = log4m.LogManager.getLogger('fi.helsinki.biosci.ala_laurila.protocols.stage.Annulus');
-    end
-    
-    properties (Hidden, Dependent)
         curInnerDiameter
         curOuterDiameter
     end
+    
     
     properties (Dependent)
         initArea                        % Initial area
@@ -63,7 +61,6 @@ classdef Annulus < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStageProto
         
         function p = createPresentation(obj)
             canvasSize = obj.rig.getDevice('Stage').getCanvasSize();
-            
             spotDiameterPix = obj.um2pix(obj.curOuterDiameter);
             
             p = stage.core.Presentation((obj.preTime + obj.stimTime + obj.tailTime) * 1e-3);
@@ -99,13 +96,19 @@ classdef Annulus < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStageProto
         function prepareEpoch(obj, epoch)
             prepareEpoch@fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStageProtocol(obj, epoch);
             
-            if mod(obj.numEpochsPrepared, obj.nSteps) == 0
+            index = mod(obj.numEpochsPrepared, obj.nSteps);
+            if index == 0
                 obj.innerDiameterVector = obj.innerDiameterVector(randperm(obj.nSteps));
                 obj.log.info(['Permuted diameter vecor ' num2str(obj.innerDiameterVector)]);
             end
             
+            obj.curInnerDiameter = obj.innerDiameterVector(index + 1);
+            obj.curOuterDiameter = obj.getOuterDiameter(obj.curInnerDiameter);
+            
             device = obj.rig.getDevice(obj.amp);
             duration = (obj.preTime + obj.stimTime + obj.tailTime) / 1e3;
+            epoch.addParameter('curInnerDiameter', obj.curInnerDiameter);
+            epoch.addParameter('curOuterDiameter', obj.curOuterDiameter);
             epoch.addDirectCurrentStimulus(device, device.background, duration, obj.sampleRate);
             epoch.addResponse(device);
         end
@@ -125,7 +128,7 @@ classdef Annulus < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStageProto
             tf = obj.numEpochsCompleted < obj.numberOfAverages;
         end
         
-        function diameter = getDiameter(obj, d)
+        function diameter = getOuterDiameter(obj, d)
             
             if strcmp(obj.keepConstant, 'area');
                 diameter = round(2 * sqrt((obj.initArea/pi) + (d./ 2) ^2));
@@ -135,23 +138,15 @@ classdef Annulus < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStageProto
         end
         
         function d = get.maxOuterDiam(obj)
-            d = obj.getDiameter(obj.maxInnerDiam);
+            d = obj.getOuterDiameter(obj.maxInnerDiam);
         end
-        
-        function d = get.curOuterDiameter(obj)
-            d = obj.getDiameter(obj.curInnerDiameter);
-        end
-        
+                
         function a = get.initArea(obj)
             a = pi*((obj.minOuterDiam/2) ^2 - (obj.minInnerDiam/2) ^2);
         end
         
         function initThick = get.initThick(obj)
             initThick = (obj.minOuterDiam - obj.minInnerDiam)/2;
-        end
-        
-        function d = get.curInnerDiameter(obj)
-            d = obj.innerDiameterVector(mod(obj.numEpochsPrepared, obj.nSteps) + 1);
         end
         
     end

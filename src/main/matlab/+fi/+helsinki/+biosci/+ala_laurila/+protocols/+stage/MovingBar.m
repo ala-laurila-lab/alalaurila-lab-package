@@ -19,9 +19,6 @@ classdef MovingBar < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStagePro
     properties (Hidden)
         ampType
         angles
-    end
-    
-    properties (Hidden, Dependent)
         curAngle
     end
     
@@ -77,9 +74,10 @@ classdef MovingBar < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStagePro
             
             function pos = movementController(state, duration)
                 pos = [NaN, NaN];
-                if (state.time > obj.preTime/1e3 && state.time <= (duration - obj.tailTime)/1e3)
-                    pos = [xPos + (state.time - obj.preTime/1e3) * pixelSpeed * xStep,...
-                        yPos + (state.time - obj.preTime/1e3) * pixelSpeed* yStep];
+                if state.time >= obj.preTime * 1e-3 && state.time < (duration - obj.tailTime) * 1e-3
+                    pos = [xPos + (state.time - obj.preTime * 1e-3) * pixelSpeed * xStep,...
+                        yPos + (state.time - obj.preTime * 1e-3) * pixelSpeed* yStep];
+                    
                 end
             end
             
@@ -90,13 +88,16 @@ classdef MovingBar < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStagePro
         function prepareEpoch(obj, epoch)
             prepareEpoch@fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStageProtocol(obj, epoch);
             
-            % Randomize angles if this is a new set
-            if mod(obj.numEpochsPrepared, obj.nAngles) == 0
+            index = mod(obj.numEpochsPrepared, obj.nAngles);
+            if index == 0
                 obj.angles = obj.angles(randperm(obj.nAngles));
             end
             
+            obj.curAngle = obj.angles(index + 1);
+            
             device = obj.rig.getDevice(obj.amp);
             duration = (obj.preTime + obj.stimTime + obj.tailTime) / 1e3;
+            epoch.addParameter('curAngle', obj.curAngle);
             epoch.addDirectCurrentStimulus(device, device.background, duration, obj.sampleRate);
             epoch.addResponse(device);
         end
@@ -115,11 +116,7 @@ classdef MovingBar < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStagePro
         function tf = shouldContinueRun(obj)
             tf = obj.numEpochsCompleted < obj.numberOfAverages;
         end
-        
-        function angle = get.curAngle(obj)
-            angle = obj.angles(mod(obj.numEpochsPrepared, obj.nAngles) + 1);
-        end
-        
+
         function stimTime = get.stimTime(obj)
             pixelSpeed = obj.um2pix(obj.barSpeed);
             pixelDistance = obj.um2pix(obj.distance);
