@@ -57,7 +57,7 @@ classdef LightCrafterDevice < symphonyui.core.Device
             obj.addConfigurationSetting('prerender', false, 'isReadOnly', true);
             obj.addConfigurationSetting('lightCrafterLedEnables',  [auto, red, green, blue], 'isReadOnly', true);
             obj.addConfigurationSetting('lightCrafterPatternRate', obj.lightCrafter.currentPatternRate(), 'isReadOnly', true);
-            obj.addConfigurationSetting('micronsPerPixel', ip.Results.micronsPerPixel, 'isReadOnly', true);
+            %obj.addConfigurationSetting('micronsPerPixel', ip.Results.micronsPerPixel, 'isReadOnly', true);
         end
         
         function close(obj)
@@ -93,7 +93,7 @@ classdef LightCrafterDevice < symphonyui.core.Device
             tf = obj.getConfigurationSetting('prerender');
         end
         
-        function play(obj, presentation)
+        function play(obj, presentation, preTime)
             canvasSize = obj.getCanvasSize();
             
             background = stage.builtin.stimuli.Rectangle();
@@ -103,12 +103,10 @@ classdef LightCrafterDevice < symphonyui.core.Device
             presentation.setBackgroundColor(0);
             presentation.insertStimulus(1, background);
             
-            tracker = stage.builtin.stimuli.Rectangle();
-            tracker.size = [canvasSize(1) * 1/8, canvasSize(2)];
-            tracker.position = [canvasSize(1) - (canvasSize(1)/16), canvasSize(2)/2];
+            tracker = stage.builtin.stimuli.FrameTracker();
+            tracker.position = [160, 120];
             presentation.addStimulus(tracker);
-            
-            trackerColor = stage.builtin.controllers.PropertyController(tracker, 'color', @(s)mod(s.frame, 2) && double(s.time + (1/s.frameRate) < presentation.duration));
+            trackerColor =  stage.builtin.controllers.PropertyController(tracker, 'color', @(s)double(255.*repmat(s.time < preTime *1e-3, 1, 3)));
             presentation.addController(trackerColor);            
             
             if obj.getPrerender()

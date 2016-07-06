@@ -8,12 +8,12 @@ classdef (Abstract) AlaLaurilaStageProtocol < fi.helsinki.biosci.ala_laurila.pro
         
         function prepareEpoch(obj, epoch)
             prepareEpoch@fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaProtocol(obj, epoch);
-            epoch.shouldWaitForTrigger = true;
+            %epoch.shouldWaitForTrigger = true;
         end
         
         function controllerDidStartHardware(obj)
             controllerDidStartHardware@fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaProtocol(obj);
-            obj.rig.getDevice('Stage').play(obj.createPresentation());
+            obj.rig.getDevice('Stage').play(obj.createPresentation(), obj.preTime);
         end
         
         function tf = shouldContinuePreloadingEpochs(obj) %#ok<MANU>
