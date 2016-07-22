@@ -52,7 +52,6 @@ classdef DriftingGratings < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaS
             %set directions
             obj.angles = rem(obj.startAngle:round(360/obj.numberOfAngles):obj.startAngle+359, 360);
             
-            % open figures here
         end
         
         function prepareEpoch(obj, epoch)
@@ -143,6 +142,7 @@ classdef DriftingGratings < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaS
             phaseControllerFunc = stage.builtin.controllers.PropertyController(grat, 'phase', @(state)phaseController(state, startMovementTime, tf));
             p.addController(phaseControllerFunc);
  
+            obj.addFrameTracker(p);
         end
 
         function tf = shouldContinuePreparingEpochs(obj)
