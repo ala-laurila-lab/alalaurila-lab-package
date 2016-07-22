@@ -63,6 +63,8 @@ classdef MovingBar < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStagePro
             
             barMovement = stage.builtin.controllers.PropertyController(bar, 'position', @(state)movementController(state, p.duration * 1e3));
             p.addController(barMovement);
+            
+            obj.addFrameTracker(p);
         end
         
         function prepareEpoch(obj, epoch)

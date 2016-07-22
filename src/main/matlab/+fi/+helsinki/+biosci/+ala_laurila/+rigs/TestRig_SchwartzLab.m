@@ -22,6 +22,9 @@ classdef TestRig_SchwartzLab < symphonyui.core.descriptions.RigDescription
             
             stage = io.github.stage_vss.devices.StageDevice('localhost');
             stage.addConfigurationSetting('micronsPerPixel', 1.6, 'isReadOnly', true);
+            stage.addConfigurationSetting('frameTrackerPosition', [20, 20], 'isReadOnly', true);
+            stage.addConfigurationSetting('projectorAngleOffset', 0, 'isReadOnly', true);
+
             obj.addDevice(stage);
             
 %             lightCrafter = fi.helsinki.biosci.ala_laurila.devices.LightCrafterDevice();

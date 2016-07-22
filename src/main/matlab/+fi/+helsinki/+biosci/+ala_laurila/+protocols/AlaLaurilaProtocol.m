@@ -50,6 +50,7 @@ classdef (Abstract) AlaLaurilaProtocol < symphonyui.core.Protocol
             if ~isempty(controllers)
                 epoch.addResponse(controllers{1});
             end
+            
         end
         
         function completeEpoch(obj, epoch)

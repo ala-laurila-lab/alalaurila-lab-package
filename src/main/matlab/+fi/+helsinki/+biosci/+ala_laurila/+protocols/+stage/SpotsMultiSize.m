@@ -65,7 +65,7 @@ classdef SpotsMultiSize < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaSta
         
         function preparePresentation(obj, presentation)
             %set bg
-            obj.setBackground(presentation);
+            p.setBackgroundColor(obj.meanLevel);
             
             spot = Ellipse();
             spot.radiusX = round(obj.curSize / 2 / obj.rigConfig.micronsPerPixel); %convert to pixels
@@ -84,8 +84,8 @@ classdef SpotsMultiSize < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaSta
             
             controller = PropertyController(spot, 'color', @(s)onDuringStim(s, obj.preTime, obj.stimTime, obj.intensity, obj.meanLevel));
             presentation.addController(controller);
-            
-            preparePresentation@StageProtocol(obj, presentation);
+                        
+            obj.addFrameTracker(p);
         end
         
         

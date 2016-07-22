@@ -59,6 +59,8 @@ classdef ContrastResponse < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaS
             spotVisible = stage.builtin.controllers.PropertyController(spot, 'opacity', ...
                 @(state)state.time >= obj.preTime * 1e-3 && state.time < (obj.preTime + obj.stimTime) * 1e-3);
             p.addController(spotVisible);
+            
+            obj.addFrameTracker(p);
         end
         
         function prepareEpoch(obj, epoch)

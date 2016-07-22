@@ -70,6 +70,7 @@ classdef Annulus < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStageProto
             innerCircle.position = [canvasSize(1)/2,  canvasSize(2)/2];
             p.addStimulus(innerCircle);
             
+            obj.addFrameTracker(p);
         end
         
         function prepareEpoch(obj, epoch)
