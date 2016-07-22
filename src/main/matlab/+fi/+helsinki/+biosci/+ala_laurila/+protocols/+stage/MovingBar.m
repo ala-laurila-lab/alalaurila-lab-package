@@ -9,10 +9,9 @@ classdef MovingBar < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStagePro
         barWidth = 50                   % Bar Width size (um)
         barSpeed = 1000                 % Bar speed (um / s)
         distance = 1000                 % Bar distance (um)
-        nAngles = 8                     % Number of angles
+        numberOfAngles = 8                     % Number of angles
         startAngle = 0                  % Start angle for bar direction 
-        backgroundIntensity = 0.5       % Background light intensity (0-1)
-        numberOfAverages = uint16(5)    % Number of epochs
+        numberOfCycles = 2    % Number of epochs
         interpulseInterval = 0          % Duration between spots (s)
     end
     
@@ -27,37 +26,18 @@ classdef MovingBar < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStagePro
     end
     
     methods
-        
-        function didSetRig(obj)
-            didSetRig@fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStageProtocol(obj);
-            
-            [obj.amp, obj.ampType] = obj.createDeviceNamesProperty('Amp');
-        end
-        
-        function p = getPreview(obj, panel)
-            if isempty(obj.rig.getDevices('Stage'))
-                p = [];
-                return;
-            end
-            p = io.github.stage_vss.previews.StagePreview(panel, @()obj.createPresentation(), ...
-                'windowSize', obj.rig.getDevice('Stage').getCanvasSize());
-        end
-        
+               
         function prepareRun(obj)
             prepareRun@fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStageProtocol(obj);
             
-            obj.angles = rem(obj.startAngle : round(360/obj.nAngles) : obj.startAngle + 359, 360);
-            
-            obj.showFigure('symphonyui.builtin.figures.ResponseFigure', obj.rig.getDevice(obj.amp));
-            obj.showFigure('symphonyui.builtin.figures.MeanResponseFigure', obj.rig.getDevice(obj.amp));
-            obj.showFigure('io.github.stage_vss.figures.FrameTimingFigure', obj.rig.getDevice('Stage'));
+            obj.angles = rem(obj.startAngle : round(360/obj.numberOfAngles) : obj.startAngle + 359, 360);
         end
         
         function p = createPresentation(obj)
             canvasSize = obj.rig.getDevice('Stage').getCanvasSize();
             
             p = stage.core.Presentation((obj.preTime + obj.stimTime + obj.tailTime) * 1e-3);
-            p.setBackgroundColor(obj.backgroundIntensity);
+            p.setBackgroundColor(obj.meanLevel);
             
             bar = stage.builtin.stimuli.Rectangle();
             bar.color = obj.intensity;
@@ -66,8 +46,8 @@ classdef MovingBar < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStagePro
             p.addStimulus(bar);
             
             pixelSpeed = obj.um2pix(obj.barSpeed);
-            xStep = cos(obj.curAngle * pi/180);
-            yStep = sin(obj.curAngle * pi/180);
+            xStep = cosd(obj.curAngle);
+            yStep = sind(obj.curAngle);
             
             xPos = canvasSize(1)/2 - xStep * canvasSize(2)/2;
             yPos = canvasSize(1)/2 - yStep * canvasSize(2)/2;
@@ -88,33 +68,23 @@ classdef MovingBar < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStagePro
         function prepareEpoch(obj, epoch)
             prepareEpoch@fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStageProtocol(obj, epoch);
             
-            index = mod(obj.numEpochsPrepared, obj.nAngles);
-            if index == 0
-                obj.angles = obj.angles(randperm(obj.nAngles));
+            index = mod(obj.numEpochsPrepared, obj.numberOfAngles);
+            if index == 0 
+                obj.angles = obj.angles(randperm(obj.numberOfAngles));
             end
             
             obj.curAngle = obj.angles(index + 1);
-            
-            device = obj.rig.getDevice(obj.amp);
-            duration = (obj.preTime + obj.stimTime + obj.tailTime) / 1e3;
             epoch.addParameter('curAngle', obj.curAngle);
-            epoch.addDirectCurrentStimulus(device, device.background, duration, obj.sampleRate);
-            epoch.addResponse(device);
+            
         end
         
-        function prepareInterval(obj, interval)
-            prepareInterval@fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStageProtocol(obj, interval);
-            
-            device = obj.rig.getDevice(obj.amp);
-            interval.addDirectCurrentStimulus(device, device.background, obj.interpulseInterval, obj.sampleRate);
-        end
         
         function tf = shouldContinuePreparingEpochs(obj)
-            tf = obj.numEpochsPrepared < obj.numberOfAverages;
+            tf = obj.numEpochsPrepared < obj.numberOfCycles * obj.numberOfAngles;
         end
         
         function tf = shouldContinueRun(obj)
-            tf = obj.numEpochsCompleted < obj.numberOfAverages;
+            tf = obj.numEpochsCompleted < obj.numberOfCycles * obj.numberOfAngles;
         end
 
         function stimTime = get.stimTime(obj)

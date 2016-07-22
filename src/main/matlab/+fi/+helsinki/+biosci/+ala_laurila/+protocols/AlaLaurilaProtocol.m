@@ -1,5 +1,6 @@
 classdef (Abstract) AlaLaurilaProtocol < symphonyui.core.Protocol
-    
+% this class handles protocol control which is not visual stimulus specific
+
     properties (Dependent, SetAccess = private)
         amp2    % Secondary amplifier one
         amp3    % Secondary amplifier two
@@ -25,8 +26,25 @@ classdef (Abstract) AlaLaurilaProtocol < symphonyui.core.Protocol
             end
         end
         
+        function didSetRig(obj)
+            didSetRig@symphonyui.core.Protocol(obj);
+            
+            [obj.amp, obj.ampType] = obj.createDeviceNamesProperty('Amp');
+        end
+        
+        function prepareRun(obj)
+            prepareRun@symphonyui.core.Protocol(obj);
+            obj.showFigure('symphonyui.builtin.figures.ResponseFigure', obj.rig.getDevice(obj.amp));
+            obj.showFigure('symphonyui.builtin.figures.MeanResponseFigure', obj.rig.getDevice(obj.amp));
+        end
+        
         function prepareEpoch(obj, epoch)
             prepareEpoch@symphonyui.core.Protocol(obj, epoch);
+            
+            device = obj.rig.getDevice(obj.amp);
+            duration = (obj.preTime + obj.stimTime + obj.tailTime) / 1e3;
+            epoch.addDirectCurrentStimulus(device, device.background, duration, obj.sampleRate);
+            epoch.addResponse(device);
             
             controllers = obj.rig.getDevices('Temperature Controller');
             if ~isempty(controllers)

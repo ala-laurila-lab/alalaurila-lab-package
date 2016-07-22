@@ -1,19 +1,33 @@
 classdef (Abstract) AlaLaurilaStageProtocol < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaProtocol
-    
+% this class handles protocol control which is visual stimulus specific
+
+    properties
+        meanLevel = 0.5       % Background light intensity (0-1)       
+    end
+        
     methods (Abstract)
         p = createPresentation(obj);
     end
     
     methods
         
-        function prepareEpoch(obj, epoch)
-            prepareEpoch@fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaProtocol(obj, epoch);
-            %epoch.shouldWaitForTrigger = true;
+        function p = getPreview(obj, panel)
+            if isempty(obj.rig.getDevices('Stage'))
+                p = [];
+                return;
+            end
+            p = io.github.stage_vss.previews.StagePreview(panel, @()obj.createPresentation(), ...
+                'windowSize', obj.rig.getDevice('Stage').getCanvasSize());
         end
-        
+               
         function controllerDidStartHardware(obj)
             controllerDidStartHardware@fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaProtocol(obj);
             obj.rig.getDevice('Stage').play(obj.createPresentation(), obj.preTime);
+        end
+        
+        function prepareRun(obj)
+            prepareRun@fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaProtocol(obj);            
+%             obj.showFigure('io.github.stage_vss.figures.FrameTimingFigure', obj.rig.getDevice('Stage'));
         end
         
         function tf = shouldContinuePreloadingEpochs(obj) %#ok<MANU>
