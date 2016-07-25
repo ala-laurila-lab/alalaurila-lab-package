@@ -2,9 +2,9 @@ classdef Annulus < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStageProto
     
     properties
         amp                             % Output amplifier
-        preTime = 500                   % Annulus leading duration (ms)
+        preTime = 250                   % Annulus leading duration (ms)
         stimTime = 1000                 % Annulus duration (ms)
-        tailTime = 1000                 % Annulus trailing duration (ms)
+        tailTime = 500                 % Annulus trailing duration (ms)
         intensity = 1.0                 % Annulus light intensity (0-1)
         minInnerDiam = 10               % Minimum inner diameter of annulus (um)
         minOuterDiam = 200              % Minimum outer diameter of annulus  (um)
@@ -70,19 +70,19 @@ classdef Annulus < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStageProto
             innerCircle.position = [canvasSize(1)/2,  canvasSize(2)/2];
             p.addStimulus(innerCircle);
             
-            obj.addFrameTracker(p);
+%             obj.addFrameTracker(p);
         end
         
         function prepareEpoch(obj, epoch)
             prepareEpoch@fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStageProtocol(obj, epoch);
             
             index = mod(obj.numEpochsPrepared, obj.numberOfSizeSteps);
-            if index == 0
+            if index == 1
                 obj.innerDiameterVector = obj.innerDiameterVector(randperm(obj.numberOfSizeSteps));
 %                 obj.log.info(['Permuted diameter vecor ' num2str(obj.innerDiameterVector)]);
             end
             
-            obj.curInnerDiameter = obj.innerDiameterVector(index + 1);
+            obj.curInnerDiameter = obj.innerDiameterVector(index);
             obj.curOuterDiameter = obj.getOuterDiameter(obj.curInnerDiameter);
             epoch.addParameter('curInnerDiameter', obj.curInnerDiameter);
             epoch.addParameter('curOuterDiameter', obj.curOuterDiameter);

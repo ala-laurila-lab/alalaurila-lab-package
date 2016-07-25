@@ -9,18 +9,19 @@ classdef SpotsMultiSize < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaSta
     properties
         amp
         %times in ms
-        preTime = 500	% Spot leading duration (ms)
-        stimTime = 500	% Spot duration (ms)
-        tailTime = 500	% Spot trailing duration (ms)
+        preTime = 250	% Spot leading duration (ms)
+        stimTime = 1000	% Spot duration (ms)
+        tailTime = 250	% Spot trailing duration (ms)
         
         %mean (bg) and amplitude of pulse
         intensity = 0.1;
         
         %stim size in microns, use rigConfig to set microns per pixel
         minSize = 50
-        numberOfSizeSteps = 10
         maxSize = 1500
-        numberOfCyles = 2;
+
+        numberOfSizeSteps = 10
+        numberOfCycles = 2;
         
         logScaling = false % scale spot size logarithmically (more precision in smaller sizes)
     end
@@ -47,32 +48,35 @@ classdef SpotsMultiSize < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaSta
         
         function prepareEpoch(obj, epoch)
             % Call the base method.
-            prepareEpoch@StageProtocol(obj, epoch);
+            prepareEpoch@fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStageProtocol(obj, epoch);
             
             % Randomize sizes if this is a new set
-            if mod(obj.numEpochsQueued, obj.Nsteps) == 0
-               obj.sizes = obj.sizes(randperm(obj.numberOfSizeSteps)); 
+            index = mod(obj.numEpochsPrepared, obj.numberOfSizeSteps);
+            if index == 1
+                obj.sizes = obj.sizes(randperm(obj.numberOfSizeSteps)); 
             end
             
             % compute current size and add parameter for it
-            sizeInd = mod(obj.numEpochsQueued, obj.numberOfSizeSteps) + 1;
             
             %get current position
-            obj.curSize = obj.sizes(sizeInd);
+            obj.curSize = obj.sizes(index);
             epoch.addParameter('curSpotSize', obj.curSize);
         end
         
         
-        function preparePresentation(obj, presentation)
+        function p = createPresentation(obj)
             %set bg
+            p = stage.core.Presentation((obj.preTime + obj.stimTime + obj.tailTime) * 1e-3);
+
             p.setBackgroundColor(obj.meanLevel);
             
-            spot = Ellipse();
-            spot.radiusX = round(obj.curSize / 2 / obj.rigConfig.micronsPerPixel); %convert to pixels
+            spot = stage.builtin.stimuli.Ellipse();
+            spot.radiusX = round(obj.um2pix(obj.curSize / 2));
             spot.radiusY = spot.radiusX;
             %spot.color = obj.intensity;
-            spot.position = [obj.windowSize(1)/2, obj.windowSize(2)/2];
-            presentation.addStimulus(spot);
+            canvasSize = obj.rig.getDevice('Stage').getCanvasSize();
+            spot.position = canvasSize / 2;
+            p.addStimulus(spot);
             
             function c = onDuringStim(state, preTime, stimTime, intensity, meanLevel)
                 if state.time>preTime*1e-3 && state.time<=(preTime+stimTime)*1e-3
@@ -82,10 +86,10 @@ classdef SpotsMultiSize < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaSta
                 end
             end
             
-            controller = PropertyController(spot, 'color', @(s)onDuringStim(s, obj.preTime, obj.stimTime, obj.intensity, obj.meanLevel));
-            presentation.addController(controller);
+            controller = stage.builtin.controllers.PropertyController(spot, 'color', @(s)onDuringStim(s, obj.preTime, obj.stimTime, obj.intensity, obj.meanLevel));
+            p.addController(controller);
                         
-            obj.addFrameTracker(p);
+%             obj.addFrameTracker(p);
         end
         
         

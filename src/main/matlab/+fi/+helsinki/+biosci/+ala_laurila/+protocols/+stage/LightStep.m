@@ -33,6 +33,7 @@ classdef LightStep < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStagePro
             %set bg
             p.setBackgroundColor(obj.meanLevel);
             
+            spot = stage.builtin.stimuli.Ellipse();
             spot.radiusX = round(obj.um2pix(obj.spotSize / 2));
             spot.radiusY = spot.radiusX;
             %spot.color = obj.intensity;
@@ -51,6 +52,7 @@ classdef LightStep < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStagePro
             controller = stage.builtin.controllers.PropertyController(spot, 'color', @(s)onDuringStim(s, obj.preTime, obj.stimTime, obj.intensity, obj.meanLevel));
             p.addController(controller);
                         
+%             obj.addFrameTracker(p);
         end
         
         
