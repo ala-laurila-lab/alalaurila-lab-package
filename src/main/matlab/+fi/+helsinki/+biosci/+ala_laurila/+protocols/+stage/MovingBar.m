@@ -1,4 +1,9 @@
 classdef MovingBar < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStageProtocol
+
+    properties (Hidden)
+        version = 3
+        displayName = 'Moving Bar'
+    end
     
     properties
         amp                             % Output amplifier
@@ -9,10 +14,8 @@ classdef MovingBar < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStagePro
         barWidth = 50                   % Bar Width size (um)
         barSpeed = 1000                 % Bar speed (um / s)
         distance = 1000                 % Bar distance (um)
-        numberOfAngles = 8                     % Number of angles
-        startAngle = 0                  % Start angle for bar direction 
-        numberOfCycles = 2    % Number of epochs
-        interpulseInterval = 0          % Duration between spots (s)
+        numberOfAngles = 12
+        numberOfCycles = 2
     end
     
     properties (Hidden)

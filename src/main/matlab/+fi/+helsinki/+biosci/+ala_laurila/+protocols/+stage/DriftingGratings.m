@@ -21,13 +21,10 @@ classdef DriftingGratings < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaS
         gratingSpeed = 1000; %um/s
         cycleHalfWidth = 50; %um
         apertureDiameter = 0; %um
-%         squareOnFraction = 0.5;
         gratingProfile = 'sine'; %sine, square, or sawtooth
+        contrast = 1;
         
         numberOfAngles = 12;
-        contrast = 1;
-        startAngle = 0;
-        interpulseInterval = 0
         numberOfCycles = 2;
     end
     
@@ -50,7 +47,7 @@ classdef DriftingGratings < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaS
             prepareRun@fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStageProtocol(obj);
             
             %set directions
-            obj.angles = rem(obj.startAngle:round(360/obj.numberOfAngles):obj.startAngle+359, 360);
+            obj.angles = rem(0:round(360/obj.numberOfAngles):359, 360);
             
         end
         

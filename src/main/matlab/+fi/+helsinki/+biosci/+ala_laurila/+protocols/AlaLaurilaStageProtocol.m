@@ -13,6 +13,21 @@ classdef (Abstract) AlaLaurilaStageProtocol < fi.helsinki.biosci.ala_laurila.pro
     
     methods
         
+        function d = getPropertyDescriptor(obj, name)
+            d = getPropertyDescriptor@symphonyui.core.Protocol(obj, name);
+            
+            switch name
+                case {'meanLevel', 'offsetX', 'offsetY','intensity','numberOfCycles','numberOfAngles','ndfs'}
+                    d.category = '1 Basic';
+                case {'stimTime','preTime','tailTime'}
+                    d.category = '2 Timing';
+                case {'amp','amp2','amp3','amp4','sampleRate'}
+                    d.category = '9 Amplifiers';
+                otherwise
+                    d.category = '4 Other';
+            end
+        end        
+        
         function p = getPreview(obj, panel)
             if isempty(obj.rig.getDevices('Stage'))
                 p = [];
