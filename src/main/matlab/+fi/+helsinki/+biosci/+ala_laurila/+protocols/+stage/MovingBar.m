@@ -64,18 +64,18 @@ classdef MovingBar < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStagePro
             barMovement = stage.builtin.controllers.PropertyController(bar, 'position', @(state)movementController(state, p.duration * 1e3));
             p.addController(barMovement);
             
-            obj.addFrameTracker(p);
+%             obj.addFrameTracker(p);
         end
         
         function prepareEpoch(obj, epoch)
             prepareEpoch@fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStageProtocol(obj, epoch);
             
             index = mod(obj.numEpochsPrepared, obj.numberOfAngles);
-            if index == 0 
+            if index == 1
                 obj.angles = obj.angles(randperm(obj.numberOfAngles));
             end
             
-            obj.curAngle = obj.angles(index + 1);
+            obj.curAngle = obj.angles(index);
             epoch.addParameter('curAngle', obj.curAngle);
             
         end

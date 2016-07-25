@@ -32,22 +32,22 @@ classdef (Abstract) AlaLaurilaStageProtocol < fi.helsinki.biosci.ala_laurila.pro
 %             obj.showFigure('io.github.stage_vss.figures.FrameTimingFigure', obj.rig.getDevice('Stage'));
         end
         
-        function addFrameTracker(obj,presentation)
-            stages = obj.rig.getDevices('Stage');
-            if isempty(stages)
-                frameTrackerPosition = [20,20];
-            else
-                frameTrackerPosition = stages{1}.getConfigurationSetting('frameTrackerPosition');
-            end
-            
-            frameTracker = stage.builtin.stimuli.FrameTracker();
-            pixelOffsetX = round(obj.um2pix(obj.offsetX)); % reverse the canvas offset to keep it in the corner
-            pixelOffsetY = round(obj.um2pix(obj.offsetY));
-            frameTracker.position = frameTrackerPosition - [pixelOffsetX, pixelOffsetY]; %gets this from RigConfig, and undoes canvas offset
-            controller = stage.builtin.controllers.PropertyController(frameTracker, 'color', @(s)double(255.*repmat(s.time<obj.preTime*1E-3, 1, 3))); %temp hack, frametracker only for preTime
-            presentation.addController(controller);
-            presentation.addStimulus(frameTracker);
-        end
+%         function addFrameTracker(obj,presentation)
+%             stages = obj.rig.getDevices('Stage');
+%             if isempty(stages)
+%                 frameTrackerPosition = [20,20];
+%             else
+%                 frameTrackerPosition = stages{1}.getConfigurationSetting('frameTrackerPosition');
+%             end
+%             
+%             frameTracker = stage.builtin.stimuli.FrameTracker();
+%             pixelOffsetX = round(obj.um2pix(obj.offsetX)); % reverse the canvas offset to keep it in the corner
+%             pixelOffsetY = round(obj.um2pix(obj.offsetY));
+%             frameTracker.position = frameTrackerPosition - [pixelOffsetX, pixelOffsetY]; %gets this from RigConfig, and undoes canvas offset
+%             controller = stage.builtin.controllers.PropertyController(frameTracker, 'color', @(s)double(255.*repmat(s.time<obj.preTime*1E-3, 1, 3))); %temp hack, frametracker only for preTime
+%             presentation.addController(controller);
+%             presentation.addStimulus(frameTracker);
+%         end
             
         function tf = shouldContinuePreloadingEpochs(obj) %#ok<MANU>
             tf = false;

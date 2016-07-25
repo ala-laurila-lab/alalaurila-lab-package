@@ -60,14 +60,11 @@ classdef DriftingGratings < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaS
             
             % Randomize angles if this is a new set
             index = mod(obj.numEpochsPrepared, obj.numberOfAngles);
-            if index == 0 
+            if index == 1
                 obj.angles = obj.angles(randperm(obj.numberOfAngles));
             end
             
-            % compute current angle and add parameter to the epoch
-            angleInd = index + 1;
-            
-            obj.curAngle = obj.angles(angleInd); %make it a property so preparePresentation has access to it
+            obj.curAngle = obj.angles(index); %make it a property so preparePresentation has access to it
             epoch.addParameter('gratingAngle', obj.curAngle);
             epoch.addParameter('anglesLikeMovingBar',1);
         end
@@ -142,7 +139,7 @@ classdef DriftingGratings < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaS
             phaseControllerFunc = stage.builtin.controllers.PropertyController(grat, 'phase', @(state)phaseController(state, startMovementTime, tf));
             p.addController(phaseControllerFunc);
  
-            obj.addFrameTracker(p);
+%             obj.addFrameTracker(p);
         end
 
         function tf = shouldContinuePreparingEpochs(obj)
