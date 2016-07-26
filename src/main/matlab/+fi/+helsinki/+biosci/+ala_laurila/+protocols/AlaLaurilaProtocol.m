@@ -18,18 +18,30 @@ classdef (Abstract) AlaLaurilaProtocol < symphonyui.core.Protocol
     end
     
     methods
-        
+
         function d = getPropertyDescriptor(obj, name)
             d = getPropertyDescriptor@symphonyui.core.Protocol(obj, name);
-            
+
             if ismember(name, obj.ampList) && isempty(obj.getSecondaryAmp(name))
                 d.isHidden = true;
             end
             
             if strncmp(name, 'ndfs', 4) && isempty(obj.ndfs)
                 d.isHidden = true;
+            end            
+            
+            switch name
+                case {'numberOfCycles','numberOfEpochs','ndfs'}
+                    d.category = '1 Basic';
+                case {'stimTime','preTime','tailTime'}
+                    d.category = '2 Timing';
+                case {'amp','amp2','amp3','amp4','sampleRate','ampMode'}
+                    d.category = '9 Amplifiers';
+                otherwise
+                    d.category = '4 Other';
             end
-        end
+        end 
+        
         
         function didSetRig(obj)
             didSetRig@symphonyui.core.Protocol(obj);
