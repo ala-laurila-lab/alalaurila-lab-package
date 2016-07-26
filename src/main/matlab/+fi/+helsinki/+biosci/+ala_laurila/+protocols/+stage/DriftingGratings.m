@@ -1,17 +1,11 @@
 classdef DriftingGratings < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStageProtocol
     
-    properties (Constant)
-        identifier = 'edu.northwestern.SchwartzLab.DriftingGratings'
-        version = 4
-        displayName = 'Drifting Gratings'
-    end
-    
     properties
         amp
         %times in ms
         preTime = 250; %will be rounded to account for frame rate
         tailTime = 250; %will be rounded to account for frame rate
-        stimTime = 1000; %will be rounded to account for frame rate    
+        stimTime = 1000; %will be rounded to account for frame rate
         
         movementDelay = 200;
         
@@ -32,12 +26,14 @@ classdef DriftingGratings < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaS
         spatialFreq %cycles/degree
         temporalFreq %cycles/s (Hz)
     end
-        
+    
     properties (Hidden)
-       ampType
-       curAngle
-       angles 
-       gratingProfileType = symphonyui.core.PropertyType('char', 'row', {'sine', 'square', 'sawtooth'})
+        version = 4
+        displayName = 'Drifting Gratings'
+        ampType
+        curAngle
+        angles
+        gratingProfileType = symphonyui.core.PropertyType('char', 'row', {'sine', 'square', 'sawtooth'})
     end
     
     methods
@@ -68,7 +64,7 @@ classdef DriftingGratings < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaS
         
         function p = createPresentation(obj)
             centerPos = obj.rig.getDevice('Stage').getCanvasSize() / 2;
-        
+            
             p = stage.core.Presentation((obj.preTime + obj.stimTime + obj.tailTime) * 1e-3);
             p.setBackgroundColor(obj.meanLevel);
             
@@ -80,17 +76,17 @@ classdef DriftingGratings < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaS
             grat.spatialFreq = obj.um2pix(1)/(2*obj.cycleHalfWidth);
             grat.phase = 0;
             p.addStimulus(grat);
-%             pixelSpeed = obj.gratingSpeed./obj.rigConfig.micronsPerPixel;
+            %             pixelSpeed = obj.gratingSpeed./obj.rigConfig.micronsPerPixel;
             
             % circular aperture mask (only gratings in center)
             if obj.apertureDiameter > 0
                 apertureDiameterRel = obj.apertureDiameter / max(obj.gratingLength, obj.gratingWidth);
                 mask = stage.core.Mask.createCircularEnvelope(2048, apertureDiameterRel);
-%                 mask = stage.core.Mask.createCircularEnvelope();
+                %                 mask = stage.core.Mask.createCircularEnvelope();
                 grat.setMask(mask);
             end
-
-%             circular block mask (only gratings outside center)
+            
+            %             circular block mask (only gratings outside center)
             function opacity = onDuringStim(state, preTime, stimTime)
                 if state.time>preTime*1e-3 && state.time<=(preTime+stimTime)*1e-3
                     opacity = 1;
@@ -108,8 +104,8 @@ classdef DriftingGratings < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaS
                 centerCircleController = stage.builtin.controllers.PropertyController(spot, 'opacity', @(s)onDuringStim(s, obj.preTime, obj.stimTime));
                 p.addController(centerCircleController);
             end
-
-
+            
+            
             % Gratings drift controller
             function pos = posController(state, duration, preTime, tailTime, centerPos)
                 if state.time<=preTime/1E3 || state.time>duration-tailTime/1E3 %in pre or tail time
@@ -120,7 +116,7 @@ classdef DriftingGratings < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaS
                     pos = centerPos;
                 end
             end
-            posControllerFunc = stage.builtin.controllers.PropertyController(grat, 'position', @(s)posController(s, p.duration, obj.preTime, obj.tailTime, centerPos));            
+            posControllerFunc = stage.builtin.controllers.PropertyController(grat, 'position', @(s)posController(s, p.duration, obj.preTime, obj.tailTime, centerPos));
             p.addController(posControllerFunc);
             
             function phase = phaseController(state, startMovementTime, temporalFreq)
@@ -135,10 +131,10 @@ classdef DriftingGratings < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaS
             tf = obj.gratingSpeed/(2*obj.cycleHalfWidth);
             phaseControllerFunc = stage.builtin.controllers.PropertyController(grat, 'phase', @(state)phaseController(state, startMovementTime, tf));
             p.addController(phaseControllerFunc);
- 
-%             obj.addFrameTracker(p);
+            
+            %             obj.addFrameTracker(p);
         end
-
+        
         function tf = shouldContinuePreparingEpochs(obj)
             tf = obj.numEpochsPrepared < obj.numberOfCycles * obj.numberOfAngles;
         end
@@ -156,8 +152,8 @@ classdef DriftingGratings < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaS
         function temporalFreq = get.temporalFreq(obj)
             temporalFreq = obj.gratingSpeed/(2*obj.cycleHalfWidth);
         end
-            
-
+        
+        
     end
     
 end

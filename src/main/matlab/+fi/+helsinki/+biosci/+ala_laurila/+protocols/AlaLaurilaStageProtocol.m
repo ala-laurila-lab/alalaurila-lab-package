@@ -2,7 +2,7 @@ classdef (Abstract) AlaLaurilaStageProtocol < fi.helsinki.biosci.ala_laurila.pro
 % this class handles protocol control which is visual stimulus specific
 
     properties
-        meanLevel = 0.5       % Background light intensity (0-1)
+        meanLevel = 0.0       % Background light intensity (0-1)
         offsetX = 0
         offsetY = 0
     end
