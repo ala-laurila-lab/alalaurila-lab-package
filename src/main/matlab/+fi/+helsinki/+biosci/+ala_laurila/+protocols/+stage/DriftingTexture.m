@@ -45,7 +45,7 @@ classdef DriftingTexture < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaSt
 
             % generate texture
             canvasSize = obj.rig.getDevice('Stage').getCanvasSize();
-            sigma = obj.um2pix(0.5 * obj.textureScale / obj.resScaleFactor)
+            sigma = obj.um2pix(0.5 * obj.textureScale / obj.resScaleFactor);
             dist = obj.speed * obj.stimTime / 1000; % um / sec
             obj.moveDistance = dist;
             res = [max(canvasSize) * 1.42 + obj.um2pix(dist),...
@@ -56,29 +56,37 @@ classdef DriftingTexture < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaSt
 
             stream = RandStream('mt19937ar','Seed',obj.randomSeed);
             M = randn(stream, res);
-            M = imgaussfilt(M, sigma);
+            defaultSize = 2*ceil(2*sigma)+1;
+            M = imgaussfilt(M, sigma, 'FilterDomain','frequency','FilterSize',defaultSize*2+1);
 
             figure(99)
-            imagesc(M)            
+            subplot(2,1,1)
+            imagesc(M)
+            caxis([-.1,.1])
+%             caxis([min(M(:)), max(M(:))/2])
+            colormap gray
             
             if obj.uniformDistribution
-                M_flat = M(:);
-                bins = [-Inf prctile(M_flat,1:1:100)];
+                bins = [-Inf prctile(M(:),1:1:100)];
                 M_orig = M;
                 for i=1:length(bins)-1
                     M(M_orig>bins(i) & M_orig<=bins(i+1)) = i*(1/(length(bins)-1));
                 end
-                M = M - min(min(M)); %set mins to 0
-                M = M./max(max(M)); %set max to 1;
-                M = M - mean(mean(M)) + 0.5; %set mean to 0.5;
+                M = M - min(M(:)); %set mins to 0
+                M = M./max(M(:)); %set max to 1;
+                M = M - mean(M(:)) + 0.5; %set mean to 0.5;
             else % normal distribution
-                M = zscore(M(:)) * 0.5 + 0.5;
+                M = zscore(M(:)) * 0.3 + 0.5;
                 M = reshape(M, res);
                 M(M < 0) = 0;
                 M(M > 1) = 1;
             end
 
-
+            figure(99)
+            subplot(2,1,2)
+            imagesc(M)
+%             caxis([min(M(:)), max(M(:))/2])
+            colormap gray
             
             obj.imageMatrix = uint8(255 * M);
             disp('done');

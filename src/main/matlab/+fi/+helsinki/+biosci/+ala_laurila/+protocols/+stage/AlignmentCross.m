@@ -8,7 +8,7 @@ classdef AlignmentCross < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaSta
         intensity = 1.0                 % Cross light intensity (0-1)
         width = 10                      % Width of the cross in (um)
         length = 200                    % Length of the cross in  (um)
-        numberOfAverages = uint16(5)    % Number of epochs
+        numberOfEpochs = 5              % Number of epochs
         interpulseInterval = 0          % Duration between spots (s)
         asymmetricShape = false         % Display asymmetric cross
     end

@@ -17,7 +17,7 @@ classdef (Abstract) AlaLaurilaStageProtocol < fi.helsinki.biosci.ala_laurila.pro
             d = getPropertyDescriptor@symphonyui.core.Protocol(obj, name);
             
             switch name
-                case {'meanLevel', 'offsetX', 'offsetY','intensity','numberOfCycles','numberOfAngles','ndfs'}
+                case {'meanLevel', 'offsetX', 'offsetY','intensity','numberOfCycles','numberOfAngles','numberOfEpochs','ndfs'}
                     d.category = '1 Basic';
                 case {'stimTime','preTime','tailTime'}
                     d.category = '2 Timing';
