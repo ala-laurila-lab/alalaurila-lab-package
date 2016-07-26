@@ -1,6 +1,10 @@
 classdef (Abstract) AlaLaurilaProtocol < symphonyui.core.Protocol
 % this class handles protocol control which is not visual stimulus specific
 
+    properties
+        ampMode = 'Cell attached'; % sets the ephys recording and analysis modes, 'Cell attached' or 'Whole cell'
+    end
+
     properties (Dependent, SetAccess = private)
         amp2    % Secondary amplifier one
         amp3    % Secondary amplifier two
@@ -9,7 +13,8 @@ classdef (Abstract) AlaLaurilaProtocol < symphonyui.core.Protocol
     end
     
     properties(Hidden)
-        ampList = {'amp2', 'amp3', 'amp4'};
+       ampList = {'amp2', 'amp3', 'amp4'};
+%        ampModeType = symphonyui.core.PropertyType('char', 'row', {'Cell attached','Whole cell'}) 
     end
     
     methods

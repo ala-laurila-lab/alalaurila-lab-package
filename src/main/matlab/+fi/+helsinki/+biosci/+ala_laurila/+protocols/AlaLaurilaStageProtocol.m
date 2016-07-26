@@ -21,7 +21,7 @@ classdef (Abstract) AlaLaurilaStageProtocol < fi.helsinki.biosci.ala_laurila.pro
                     d.category = '1 Basic';
                 case {'stimTime','preTime','tailTime'}
                     d.category = '2 Timing';
-                case {'amp','amp2','amp3','amp4','sampleRate'}
+                case {'amp','amp2','amp3','amp4','sampleRate','ampMode'}
                     d.category = '9 Amplifiers';
                 otherwise
                     d.category = '4 Other';
