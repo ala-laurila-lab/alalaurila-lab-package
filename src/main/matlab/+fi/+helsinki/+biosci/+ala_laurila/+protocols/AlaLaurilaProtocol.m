@@ -14,7 +14,7 @@ classdef (Abstract) AlaLaurilaProtocol < symphonyui.core.Protocol
     
     properties(Hidden)
        ampList = {'amp2', 'amp3', 'amp4'};
-%        ampModeType = symphonyui.core.PropertyType('char', 'row', {'Cell attached','Whole cell'}) 
+       ampModeType = symphonyui.core.PropertyType('char', 'row', {'Cell attached','Whole cell'}) 
     end
     
     methods

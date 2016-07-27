@@ -73,19 +73,19 @@ classdef Annulus < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStageProto
 %             obj.addFrameTracker(p);
         end
         
-        function prepareEpoch(obj, epoch)
-            prepareEpoch@fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStageProtocol(obj, epoch);
-            
+        function prepareEpoch(obj, epoch)            
             index = mod(obj.numEpochsPrepared, obj.numberOfSizeSteps);
-            if index == 1
+            if index == 0
                 obj.innerDiameterVector = obj.innerDiameterVector(randperm(obj.numberOfSizeSteps));
-%                 obj.log.info(['Permuted diameter vecor ' num2str(obj.innerDiameterVector)]);
             end
             
-            obj.curInnerDiameter = obj.innerDiameterVector(index);
+            obj.curInnerDiameter = obj.innerDiameterVector(index+1);
             obj.curOuterDiameter = obj.getOuterDiameter(obj.curInnerDiameter);
             epoch.addParameter('curInnerDiameter', obj.curInnerDiameter);
             epoch.addParameter('curOuterDiameter', obj.curOuterDiameter);
+
+            prepareEpoch@fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStageProtocol(obj, epoch);
+            
         end
         
         function tf = shouldContinuePreparingEpochs(obj)

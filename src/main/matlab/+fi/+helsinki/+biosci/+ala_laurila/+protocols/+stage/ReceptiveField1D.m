@@ -53,12 +53,10 @@ classdef ReceptiveField1D < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaS
         end
         
         function prepareEpoch(obj, epoch)
-            % Call the base method.
-            prepareEpoch@fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStageProtocol(obj, epoch);
-            
+
             % Randomize angles if this is a new set
             index = mod(obj.numEpochsPrepared, obj.numberOfPositions);
-            if index == 1
+            if index == 0
                 obj.positions = obj.positions(randperm(obj.numberOfPositions));
             end
             
@@ -74,7 +72,10 @@ classdef ReceptiveField1D < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaS
             end
             epoch.addParameter('positionX', obj.um2pix(obj.curPosX - canvasSize(1)/2));
             epoch.addParameter('positionY', obj.um2pix(obj.curPosY - canvasSize(2)/2));
-            
+
+            % Call the base method.
+            prepareEpoch@fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStageProtocol(obj, epoch);
+                        
         end
         
         function p = createPresentation(obj)

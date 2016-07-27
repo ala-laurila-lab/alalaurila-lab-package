@@ -20,10 +20,22 @@ classdef ContrastResponse < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaS
         intensityValues                 % Spot meanLevel * (1 + contrast Values)
         contrast                        % Spot contrast value for current epoch @see prepareEpoch
         intensity                       % Spot intensity value for current epoch @see prepareEpoch
+    end
+    
+    properties (Dependent)
         realNumberOfContrastSteps       % compensate for "both" directions having double steps
     end
     
     methods
+        
+        function r = get.realNumberOfContrastSteps(obj)
+            if strcmp(obj.contrastDirection, 'both')
+                r = obj.numberOfContrastSteps * 2;
+            else % both
+                r = obj.numberOfContrastSteps;
+            end
+        end
+        
         function prepareRun(obj)
             prepareRun@fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStageProtocol(obj);
             
@@ -40,6 +52,24 @@ classdef ContrastResponse < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaS
             obj.realNumberOfContrastSteps = length(obj.intensityValues);
             
         end
+
+        function prepareEpoch(obj, epoch)
+
+            index = mod(obj.numEpochsPrepared, obj.realNumberOfContrastSteps);
+            if index == 0
+                reorder = randperm(obj.realNumberOfContrastSteps);
+                obj.contrastValues = obj.contrastValues(reorder);
+                obj.intensityValues = obj.intensityValues(reorder);
+            end
+            
+            obj.contrast = obj.contrastValues(index + 1);
+            obj.intensity = obj.intensityValues(index + 1);
+            epoch.addParameter('contrast', obj.contrast);
+            epoch.addParameter('intensity', obj.intensity);
+            
+            prepareEpoch@fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStageProtocol(obj, epoch);
+        end
+        
         
         function p = createPresentation(obj)
             canvasSize = obj.rig.getDevice('Stage').getCanvasSize();
@@ -63,21 +93,6 @@ classdef ContrastResponse < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaS
 %             obj.addFrameTracker(p);
         end
         
-        function prepareEpoch(obj, epoch)
-            prepareEpoch@fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStageProtocol(obj, epoch);
-            
-            index = mod(obj.numEpochsPrepared, obj.realNumberOfContrastSteps);
-            if index == 0
-                reorder = randperm(obj.realNumberOfContrastSteps);
-                obj.contrastValues = obj.contrastValues(reorder);
-                obj.intensityValues = obj.intensityValues(reorder);
-            end
-            
-            obj.contrast = obj.contrastValues(index + 1);
-            obj.intensity = obj.intensityValues(index + 1);
-            epoch.addParameter('contrast', obj.contrast);
-            epoch.addParameter('intensity', obj.intensity);
-        end
         
         function tf = shouldContinuePreparingEpochs(obj)
             tf = obj.numEpochsPrepared < obj.realNumberOfContrastSteps * obj.numberOfCycles;

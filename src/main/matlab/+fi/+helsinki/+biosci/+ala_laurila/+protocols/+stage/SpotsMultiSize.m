@@ -1,11 +1,5 @@
 classdef SpotsMultiSize < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStageProtocol
     
-    properties (Constant)
-        identifier = 'edu.northwestern.SchwartzLab.SpotsMultiSize'
-        version = 3
-        displayName = 'Spots Multiple Sizes'
-    end
-    
     properties
         amp
         %times in ms
@@ -27,6 +21,8 @@ classdef SpotsMultiSize < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaSta
     end
     
     properties (Hidden)
+        displayName = 'Spots Multiple Sizes'
+        version = 3
         ampType
         curSize
         sizes
@@ -47,20 +43,23 @@ classdef SpotsMultiSize < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaSta
         end
         
         function prepareEpoch(obj, epoch)
-            % Call the base method.
-            prepareEpoch@fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStageProtocol(obj, epoch);
-            
+
             % Randomize sizes if this is a new set
-            index = mod(obj.numEpochsPrepared, obj.numberOfSizeSteps);
-            if index == 1
+            index = mod(obj.numEpochsPrepared - 1, obj.numberOfSizeSteps);
+            if index == 0
                 obj.sizes = obj.sizes(randperm(obj.numberOfSizeSteps)); 
             end
             
             % compute current size and add parameter for it
             
             %get current position
-            obj.curSize = obj.sizes(index);
+            obj.curSize = obj.sizes(index+1);
             epoch.addParameter('curSpotSize', obj.curSize);
+            
+            
+            % Call the base method.
+            prepareEpoch@fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStageProtocol(obj, epoch);
+                        
         end
         
         

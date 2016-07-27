@@ -48,18 +48,18 @@ classdef DriftingGratings < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaS
         end
         
         function prepareEpoch(obj, epoch)
-            % Call the base method.
-            prepareEpoch@fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStageProtocol(obj, epoch);
-            
             % Randomize angles if this is a new set
             index = mod(obj.numEpochsPrepared, obj.numberOfAngles);
-            if index == 1
+            if index == 0
                 obj.angles = obj.angles(randperm(obj.numberOfAngles));
             end
             
-            obj.curAngle = obj.angles(index); %make it a property so preparePresentation has access to it
+            obj.curAngle = obj.angles(index+1); %make it a property so preparePresentation has access to it
             epoch.addParameter('gratingAngle', obj.curAngle);
             epoch.addParameter('anglesLikeMovingBar',1);
+            
+            % Call the base method.
+            prepareEpoch@fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStageProtocol(obj, epoch);            
         end
         
         function p = createPresentation(obj)

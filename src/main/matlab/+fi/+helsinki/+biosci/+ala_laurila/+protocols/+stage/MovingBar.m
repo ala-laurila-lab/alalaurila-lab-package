@@ -1,10 +1,5 @@
 classdef MovingBar < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStageProtocol
 
-    properties (Hidden)
-        version = 3
-        displayName = 'Moving Bar'
-    end
-    
     properties
         amp                             % Output amplifier
         preTime = 250                   % Bar leading duration (ms)
@@ -19,6 +14,8 @@ classdef MovingBar < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStagePro
     end
     
     properties (Hidden)
+        version = 3
+        displayName = 'Moving Bar'        
         ampType
         angles                          % Moving bar with Number of angles range between [0 - 360]
         curAngle                        % Moving bar angle for the current epoch @see prepareEpoch 

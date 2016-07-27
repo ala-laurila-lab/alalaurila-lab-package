@@ -17,7 +17,7 @@ classdef (Abstract) AlaLaurilaStageProtocol < fi.helsinki.biosci.ala_laurila.pro
             d = getPropertyDescriptor@fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaProtocol(obj, name);
             
             switch name
-                case {'meanLevel', 'offsetX', 'offsetY','intensity'}
+                case {'meanLevel', 'offsetX', 'offsetY', 'intensity'}
                     d.category = '1 Basic';
             end
         end        

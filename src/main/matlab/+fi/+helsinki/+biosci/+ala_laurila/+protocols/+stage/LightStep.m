@@ -1,11 +1,5 @@
 classdef LightStep < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStageProtocol
-    
-    properties (Constant)
-        identifier = 'edu.northwestern.SchwartzLab.LightStep'
-        version = 4
-        displayName = 'Light Step'
-    end
-    
+
     properties
         amp
         %times in ms
@@ -23,6 +17,8 @@ classdef LightStep < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStagePro
     
     properties (Hidden)
         ampType
+        version = 4
+        displayName = 'Light Step'        
     end
     
     methods
