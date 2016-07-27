@@ -2,7 +2,7 @@ classdef ContrastResponse < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaS
     
     properties
         amp
-        preTime = 1000                  % Spot leading duration (ms)
+        preTime = 250                  % Spot leading duration (ms)
         stimTime = 500                  % Spot duration (ms)
         tailTime = 1000                 % Spot trailing duration (ms)
         numberOfContrastSteps = 5       % Number of contrast steps (doubled for 'both' directions)
@@ -28,16 +28,16 @@ classdef ContrastResponse < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaS
     
     methods
         
-        function r = get.realNumberOfContrastSteps(obj)
-            if strcmp(obj.contrastDirection, 'both')
-                r = obj.numberOfContrastSteps * 2;
-            else % both
-                r = obj.numberOfContrastSteps;
-            end
-        end
+%         function set.realNumberOfContrastSteps(obj,k)
+%             obj.realNumberOfContrastSteps = k;
+%         end        
         
         function prepareRun(obj)
             prepareRun@fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaStageProtocol(obj);
+            
+            if obj.meanLevel == 0
+                warning('Contrast calculation is undefined when mean level is zero');
+            end
             
             contrasts = 2.^linspace(log2(obj.minContrast), log2(obj.maxContrast), obj.numberOfContrastSteps);
             
@@ -48,8 +48,8 @@ classdef ContrastResponse < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaS
             else % both
                 obj.contrastValues = [fliplr(-1 * contrasts), contrasts];
             end
-            obj.intensityValues = obj.meanLevel + (obj.contrastValues.* obj.meanLevel);
-            obj.realNumberOfContrastSteps = length(obj.intensityValues);
+            obj.intensityValues = obj.meanLevel + (obj.contrastValues .* obj.meanLevel);
+%             obj.realNumberOfContrastSteps = length(obj.intensityValues);
             
         end
 
@@ -101,6 +101,14 @@ classdef ContrastResponse < fi.helsinki.biosci.ala_laurila.protocols.AlaLaurilaS
         function tf = shouldContinueRun(obj)
             tf = obj.numEpochsCompleted < obj.realNumberOfContrastSteps * obj.numberOfCycles;
         end
+        
+        function r = get.realNumberOfContrastSteps(obj)
+            if strcmp(obj.contrastDirection, 'both')
+                r = obj.numberOfContrastSteps * 2;
+            else % both
+                r = obj.numberOfContrastSteps;
+            end
+        end        
         
     end
     
